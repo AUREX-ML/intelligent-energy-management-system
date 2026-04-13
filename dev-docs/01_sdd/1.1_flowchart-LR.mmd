@@ -1,0 +1,53 @@
+flowchart LR
+    subgraph Edge[Data Acquisition Layer]
+        Meters[Smart Meters and Submeters]
+        Sensors[IoT Sensors]
+        Gateways[Site Gateways and Controllers]
+    end
+
+    subgraph Platform[Platform Layer]
+        MQTT[MQTT and HTTPS Ingestion]
+        Buffer[Durable Buffer and Quarantine]
+        Registry[Device Registry Service]
+        TSDB[(Time-Series Store)]
+        RDB[(Transactional Store)]
+        Analytics[Analytics and Rules Engine]
+        Alerts[Alerting Service]
+        Reports[Reporting Service]
+        Control[Control and Automation Service]
+        Auth[User and Auth Service]
+    end
+
+    subgraph Experience[Experience Layer]
+        API[API Gateway and Query API]
+        Dash[Web Dashboard and Admin UI]
+    end
+
+    subgraph Action[Action Layer]
+        Notify[In-App, Email, SMS Notifications]
+        Devices[Controllable Loads]
+    end
+
+    Meters --> Gateways
+    Sensors --> Gateways
+    Gateways --> MQTT
+    MQTT --> Buffer
+    Buffer --> Registry
+    Buffer --> TSDB
+    Buffer --> Analytics
+    Registry --> RDB
+    TSDB --> Analytics
+    RDB --> Analytics
+    Analytics --> Alerts
+    Analytics --> Reports
+    Alerts --> Notify
+    Reports --> API
+    TSDB --> API
+    RDB --> API
+    Auth --> API
+    API --> Dash
+    Dash --> Control
+    Control --> Devices
+    Control --> RDB
+    Alerts --> RDB
+    Reports --> RDB
