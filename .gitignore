@@ -2,6 +2,15 @@
 .DS_Store
 .AppleDouble
 .LSOverride
+Icon?
+._*
+.Spotlight-V100
+.Trashes
+
+# ── Windows ──────────────────────────────────────────────────────────────────
+Thumbs.db
+ehthumbs.db
+Desktop.ini
 
 # ── Python ───────────────────────────────────────────────────────────────────
 __pycache__/
@@ -22,12 +31,28 @@ env/
 .pytest_cache/
 .mypy_cache/
 .ruff_cache/
+htmlcov/
+.coverage
+.coverage.*
+coverage.xml
+*.cover
+
+# ── Alembic ──────────────────────────────────────────────────────────────────
+# Keep alembic/versions/ tracked; ignore only local state
+alembic/versions/*.pyc
+
+# ── Celery ───────────────────────────────────────────────────────────────────
+celerybeat-schedule
+celerybeat.pid
 
 # ── Node / Frontend ──────────────────────────────────────────────────────────
 node_modules/
 dist/
 .cache/
 *.local
+.npm
+.yarn-integrity
+ems-frontend/dist/
 
 # ── Editor / IDE ─────────────────────────────────────────────────────────────
 .vscode/
@@ -35,9 +60,31 @@ dist/
 *.swp
 *.swo
 *~
+*.iml
 
 # ── Logs & temp ──────────────────────────────────────────────────────────────
 *.log
 *.tmp
 *.bak
+logs/
+pip-log.txt
+pip-delete-this-directory.txt
+
+# ── Secrets & certificates ───────────────────────────────────────────────────
+*.pem
+*.key
+*.crt
+*.p12
+*.pfx
+secrets/
+
+# ── Database ─────────────────────────────────────────────────────────────────
+*.sql
+*.dump
+*.sqlite3
+*.db
+
+# ── Docker ───────────────────────────────────────────────────────────────────
+.docker/
+docker-compose.override.yml
 

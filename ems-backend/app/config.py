@@ -1,27 +1,25 @@
-from pydantic_settings import BaseSettings
-from typing import List
-
+from pydantic_settings import BaseSettings, SettingsConfigDict
 
 class Settings(BaseSettings):
-    # Application
-    APP_ENV: str = "development"
-    SECRET_KEY: str = "change-me-in-production"
-    ACCESS_TOKEN_EXPIRE_MINUTES: int = 60
-
-    # Database
-    DATABASE_URL: str = "postgresql+asyncpg://user:password@localhost:5432/ems_db"
-
-    # Redis / Celery
+    DATABASE_URL: str
+    SECRET_KEY: str
+    ALGORITHM: str = "HS256"
+    ACCESS_TOKEN_EXPIRE_MINUTES: int = 30
+    MQTT_BROKER_HOST: str = "localhost"
+    MQTT_BROKER_PORT: int = 1883
     REDIS_URL: str = "redis://localhost:6379/0"
-    CELERY_BROKER_URL: str = "redis://localhost:6379/0"
-    CELERY_RESULT_BACKEND: str = "redis://localhost:6379/1"
 
-    # CORS
-    ALLOWED_ORIGINS: List[str] = ["http://localhost:5173"]
+    # App metadata
+    app_name: str = "EMS-Backend"
+    app_env: str = "development"
+    debug: bool = False
 
-    class Config:
-        env_file = ".env"
-        env_file_encoding = "utf-8"
+    # SMTP settings
+    smtp_host: str = ""
+    smtp_port: int = 587
+    smtp_user: str = ""
+    smtp_password: str = ""
 
+    model_config = SettingsConfigDict(env_file=".env", extra="ignore")
 
 settings = Settings()

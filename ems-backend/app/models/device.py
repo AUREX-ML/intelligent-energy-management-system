@@ -1,23 +1,27 @@
-import uuid
+import enum
 from datetime import datetime
-
-from sqlalchemy import DateTime, ForeignKey, String, func
-from sqlalchemy.dialects.postgresql import UUID
-from sqlalchemy.orm import Mapped, mapped_column, relationship
-
+from sqlalchemy import Column, Integer, String, DateTime, Enum, ForeignKey, Float, Boolean
 from app.database import Base
 
+class DeviceStatus(str, enum.Enum):
+    online = "online"
+    degraded = "degraded"
+    offline = "offline"
+    unknown = "unknown"
 
 class Device(Base):
     __tablename__ = "devices"
 
-    id: Mapped[uuid.UUID] = mapped_column(UUID(as_uuid=True), primary_key=True, default=uuid.uuid4)
-    name: Mapped[str] = mapped_column(String(255), nullable=False)
-    device_type: Mapped[str] = mapped_column(String(100), nullable=False)
-    location: Mapped[str] = mapped_column(String(255), nullable=True)
-    owner_id: Mapped[uuid.UUID] = mapped_column(UUID(as_uuid=True), ForeignKey("users.id"), nullable=False)
-    created_at: Mapped[datetime] = mapped_column(DateTime(timezone=True), server_default=func.now())
-
-    owner = relationship("User", back_populates="devices")
-    telemetry = relationship("Telemetry", back_populates="device", cascade="all, delete-orphan")
-    alerts = relationship("Alert", back_populates="device", cascade="all, delete-orphan")
+    id = Column(Integer, primary_key=True, index=True)
+    device_identifier = Column(String, unique=True, nullable=False, index=True)
+    device_type = Column(String, nullable=False)          # smart_meter, submeter, sensor
+    protocol = Column(String, nullable=False)             # mqtt, http
+    building_id = Column(Integer, ForeignKey("buildings.id"), nullable=False)
+    location_description = Column(String)
+    heartbeat_interval_seconds = Column(Integer, default=60)
+    status = Column(Enum(DeviceStatus), default=DeviceStatus.unknown)
+    last_seen_at = Column(DateTime, nullable=True)
+    commissioned_at = Column(DateTime, default=datetime.utcnow)
+    is_active = Column(Boolean, default=True)
+    is_controllable = Column(Boolean, default=False)
+    is_safety_critical = Column(Boolean, default=False)

@@ -1,22 +1,34 @@
-import uuid
+import enum
 from datetime import datetime
-
-from sqlalchemy import Boolean, DateTime, ForeignKey, String, Text, func
-from sqlalchemy.dialects.postgresql import UUID
-from sqlalchemy.orm import Mapped, mapped_column, relationship
-
+from sqlalchemy import Column, Integer, String, DateTime, Enum, ForeignKey, Text
 from app.database import Base
 
+class AlertSeverity(str, enum.Enum):
+    informational = "informational"
+    warning = "warning"
+    high = "high"
+    critical = "critical"
+
+class AlertStatus(str, enum.Enum):
+    open = "open"
+    acknowledged = "acknowledged"
+    assigned = "assigned"
+    resolved = "resolved"
+    closed = "closed"
 
 class Alert(Base):
     __tablename__ = "alerts"
 
-    id: Mapped[uuid.UUID] = mapped_column(UUID(as_uuid=True), primary_key=True, default=uuid.uuid4)
-    device_id: Mapped[uuid.UUID] = mapped_column(UUID(as_uuid=True), ForeignKey("devices.id"), nullable=False, index=True)
-    severity: Mapped[str] = mapped_column(String(50), nullable=False)  # info, warning, critical
-    message: Mapped[str] = mapped_column(Text, nullable=False)
-    is_resolved: Mapped[bool] = mapped_column(Boolean, default=False)
-    triggered_at: Mapped[datetime] = mapped_column(DateTime(timezone=True), server_default=func.now())
-    resolved_at: Mapped[datetime] = mapped_column(DateTime(timezone=True), nullable=True)
-
-    device = relationship("Device", back_populates="alerts")
+    id = Column(Integer, primary_key=True, index=True)
+    device_id = Column(Integer, ForeignKey("devices.id"), nullable=False)
+    building_id = Column(Integer, ForeignKey("buildings.id"), nullable=False)
+    metric_name = Column(String)
+    triggered_value = Column(String)
+    threshold_condition = Column(String)
+    severity = Column(Enum(AlertSeverity), nullable=False)
+    status = Column(Enum(AlertStatus), default=AlertStatus.open)
+    created_at = Column(DateTime, default=datetime.utcnow)
+    acknowledged_at = Column(DateTime, nullable=True)
+    resolved_at = Column(DateTime, nullable=True)
+    resolution_notes = Column(Text, nullable=True)
+    assigned_to_user_id = Column(Integer, ForeignKey("users.id"), nullable=True)
